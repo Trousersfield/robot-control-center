@@ -1,8 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
+import '@/assets/css/main.sass'
 
-Vue.config.productionTip = false
+/* const routes = [
+  { path: '/routes/connector' }
+] */
 
 new Vue({
+  // routes,
   render: h => h(App),
 }).$mount('#app')
