@@ -1,6 +1,11 @@
-# hello-world
+# Robot Control Center
+
+Student's project to control robot motions via web application.
 
 ## Project setup
+
+Nodejs is required for this project. Download and install the latest Version.
+
 ```
 yarn install
 ```

@@ -7,10 +7,12 @@
       </div>
       <div class="w-1/6"></div>
     </div>
-    <div class="page-content">
-      <ControlCenter></ControlCenter>
-      <!--<router-link to="/controlCenter"></router-link>-->
-      <!-- content will be injected here -->
+    <div class="main-layout">
+      <main-menu class="main-menu"></main-menu>
+      <div class="main-content">
+        <!-- content will be injected here -->
+        <router-view></router-view>
+      </div>
     </div>
     <div class="page-footer">
       <h6>A footer, if we need it</h6>
@@ -21,11 +23,12 @@
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import ControlCenter from './views/ControlCenter.vue'
+import MainMenu from './components/MainMenu.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld, ControlCenter
+    HelloWorld, ControlCenter, MainMenu
   }
 }
 </script>
@@ -38,14 +41,20 @@ export default {
   -moz-osx-font-smoothing: grayscale
 
 .page-container
-  @apply w-full bg-gray-bright flex flex-col
+  @apply relative w-full h-screen bg-gray-bright
 
 .page-header
   @apply w-full inset-x-0 top-0 bg-gray-lightest p-2 flex
 
-.page-content
-  @apply w-full p-2 overflow-y-auto
+.main-layout
+  @apply w-full flex items-stretch overflow-y-auto
+
+.main-menu
+  @apply w-1/6 p-2
+
+.main-content
+  @apply w-5/6 p-2
 
 .page-footer
-  @apply w-full inset-x-0 bottom-0 p-2 text-center
+  @apply absolute w-full inset-x-0 bottom-0 p-2 text-center
 </style>
