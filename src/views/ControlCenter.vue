@@ -18,6 +18,21 @@ import ControlPanel from '../components/ControlPanel.vue'
 import RobotModel from '../components/RobotModel.vue'
 
 export default {
+  async beforeMount() {
+    console.log('got called')
+
+    var ros = new ROSLIB.Ros({
+      url: 'ws://192.168.201.128:9090'
+    })
+
+    ros.on('connection', () => {
+      console.log('connected to webserver')
+    })
+
+    ros.on('error', function(error) {
+      console.log('Error connecting to websocket server: ', error)
+    })
+  },
   components: {
     CameraStream, ControlPanel, RobotModel
   }
