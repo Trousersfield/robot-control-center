@@ -13,6 +13,8 @@
     <div class="flex content-center justify-between flex-wrap p-2">
       <button v-if="$store.state.connected" class="button-basic" @click="disconnect">Disconnect</button>
       <button v-else class="button-basic" @click="connect" :disabled="connecting">Connect</button>
+      <button class="button-basic" @click="move">Move bitch</button>
+      <button class="button-basic" @click="listen">Listen</button>
     </div>
     <div>
       <p v-if="$store.state.connected">Connected to {{ parameters.ip }}:{{ parameters.port }}</p>
@@ -30,13 +32,18 @@ export default {
       err: false,
       parameters: {
         ip: '192.168.201.128',
-        port: '9090'
+        port: '9090',
+        topics: [
+          { name: '/panda_movement_bridge/PosePublisher',
+            messageType: 'geometry_msgs/Pose' }, // current position topic
+          { name: '/panda_movement_bridge/PoseListener',
+            messageType: 'geometry_msgs/Pose' } // goal position to move robot topic
+        ]
       }
     }
   },
   methods: {
     connect () {
-      console.log('pressed')
       this.connecting = true
       this.$store.dispatch('connect', this.parameters)
         .then((res) => {
@@ -51,6 +58,14 @@ export default {
     },
     disconnect () {
       this.$store.dispatch('disconnect')
+    },
+    move () {
+      this.$store.dispatch('move', {
+        msg: { x: 0, y: 0, z: 0 } }
+      )
+    },
+    listen () {
+      this.$store.dispatch('position')
     }
   }
 }

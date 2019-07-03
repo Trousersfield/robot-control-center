@@ -13,7 +13,7 @@ This project is running with [Node.js](https://nodejs.org/en/) server. Follow th
 
 ## Running the Project
 
-[Vue CLI](https://cli.vuejs.org/) servive offers serveral run configuration options.
+[Vue CLI](https://cli.vuejs.org/) service offers serveral run configuration options.
 
 ### Compiles and hot-reloads for development
 ```

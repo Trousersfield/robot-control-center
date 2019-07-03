@@ -19,40 +19,7 @@ import RobotModel from '../components/RobotModel.vue'
 
 export default {
   async beforeMount() {
-    console.log('got called')
-
-    var ros = new ROSLIB.Ros({
-      url: 'ws://192.168.201.128:9090'
-    })
-
-    ros.on('connection', () => {
-      console.log('connected to webserver')
-    })
-
-    ros.on('error', function(error) {
-      console.log('Error connecting to websocket server: ', error)
-    })
-
-    var cmdVel = new ROSLIB.Topic({
-      ros : ros,
-      name : '/cmd_vel',
-      messageType : 'geometry_msgs/Twist'
-    })
-    
-    var twist = new ROSLIB.Message({
-      linear : {
-        x : 0.1,
-        y : 0.2,
-        z : 0.3
-      },
-      angular : {
-        x : -0.1,
-        y : -0.2,
-        z : -0.3
-      }
-    })
-
-    cmdVel.publish(twist)
+    console.log('Control Center called')
   },
   components: {
     CameraStream, ControlPanel, RobotModel
