@@ -19,7 +19,7 @@ import RobotModel from '../components/RobotModel.vue'
 
 export default {
   async beforeMount() {
-    console.log('got called')
+    console.log('Control Center called')
   },
   components: {
     CameraStream, ControlPanel, RobotModel
