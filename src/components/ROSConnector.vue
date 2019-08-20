@@ -13,13 +13,18 @@
     <div class="flex content-center justify-between flex-wrap p-2">
       <button v-if="$store.state.connected" class="button-basic" @click="disconnect">Disconnect</button>
       <button v-else class="button-basic" @click="connect" :disabled="connecting">Connect</button>
-      <button class="button-basic" @click="move">Move bitch</button>
-      <button class="button-basic" @click="listen">Listen</button>
+      <button class="button-basic" @click="move">Move</button>
+      <!--<button class="button-basic" @click="listen">Listen</button>-->
     </div>
     <div>
       <p v-if="$store.state.connected">Connected to {{ parameters.ip }}:{{ parameters.port }}</p>
       <p v-if="connecting" class="meta">Trying to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
       <p v-else-if="err">Unable to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
+    </div>
+    <div>
+      Position: {{ $store.state.position }}
+      <br>
+      orientation: {{ $store.state.orientation }}
     </div>
   </div>
 </template>
@@ -61,12 +66,13 @@ export default {
     },
     move () {
       this.$store.dispatch('move', {
-        msg: { x: 0, y: 0, z: 0 } }
+        position: { x: 0.5, y: 0, z: 0 } }
       )
     },
     listen () {
       this.$store.dispatch('position')
     }
   }
+  // rostopic echo /panda_movement_bridge/PosePublisher
 }
 </script>
