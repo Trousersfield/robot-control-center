@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>Here comes the robot model</p>
+    <p class="text-center">Franka Robot</p>
+    <img src="../assets/robot-model.jpg" >
   </div>
 </template>
 
