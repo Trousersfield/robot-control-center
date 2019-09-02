@@ -1,10 +1,20 @@
 <template>
   <ul class="menu menu-main">
-    <li>Connected: {{ $store.state.connected }}</li>
-    <li><router-link to="/">Home</router-link></li>
-    <li><router-link to="/controlCenter">Control Center</router-link></li>
-    <li><router-link to="/settings">Settings</router-link></li>
-    <li><router-link to="/about">About</router-link></li>
+    <li
+      v-if="$store.state.connected"
+      class="connection"
+    >
+      <span class="success"></span>
+      <p>Connected</p>
+    </li>
+    <li v-else class="connection">
+      <span class="alert"></span>
+      <p>Disconnected</p>
+    </li>
+    <router-link to="/" tag="li">Home</router-link>
+    <router-link to="/controlCenter" tag="li">Control Center</router-link>
+    <router-link to="/settings" tag="li">Settings</router-link>
+    <router-link to="/about" tag="li">About</router-link>
   </ul>
 </template>
 
@@ -19,14 +29,32 @@ export default {
   @apply text-base
 
   >li
-    @apply py-2 whitespace-no-wrap
+    @apply w-full
+
+  >li:not(:first-child)
+    @apply py-2 whitespace-no-wrap cursor-pointer
     
     &:hover
       @apply font-bold
     
     >a
-      @apply pl-2
+      @apply 
       
-      &.router-link-exact-active
-        @apply font-bold border-l-4 border-red-darker
+    &.router-link-exact-active
+      @apply pl-2 font-bold border-l-4 border-red-darker
+  
+  >.connection
+    @apply inline-block pb-4 border-b-4 border-gray
+
+    >span
+      @apply w-8 h-8 bg-gray inline-block rounded-full align-middle
+
+      &.alert
+        @apply bg-red-dark
+      
+      &.success
+        @apply bg-green
+
+    >p
+      @apply pl-3 inline-block align-middle
 </style>

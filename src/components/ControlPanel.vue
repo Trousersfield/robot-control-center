@@ -1,50 +1,70 @@
 <template>
   <div class="w-full flex flex-row">
-    <div class="flex-1 bg-gray-lighter px-4 py-2 m-2 left-0">
-      <div class="yz-controls">
-        <div>
-          <div></div>
-          <div
-            class="bg-blue rounded-t-lg control"
-            @click="move('top')"
-            title="move up"
-          >
-            <chevron-up-icon/>
+    <div class="flex-1 flex-col bg-gray-lighter px-4 py-2 m-2 left-0">
+      <div class="w-full">
+        <ul class="flex border-b">
+          <li class="-mb-px mr-1">
+            <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold" href="#" @class="yzControl = true">Position</a>
+          </li>
+          <li class="mr-1">
+            <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold" href="#" @class="yzControl = false">Orientation</a>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full">
+        <div v-if="yzControl" class="yz-controls">
+          <div>
+            <div></div>
+            <div
+              class="bg-blue rounded-t-lg control"
+              @click="move('up')"
+              title="move up"
+            >
+              <chevron-up-icon/>
+            </div>
+            <div></div>
           </div>
-          <div></div>
+          <div>
+            <div
+              class="bg-blue rounded-l-lg control"
+              @click="move('left')"
+              title="move left"
+            >
+              <chevron-left-icon/>
+            </div>
+            <div class="bg-blue"></div>
+            <div
+              class="bg-blue rounded-r-lg control"
+              @click="move('right')"
+              title="move right"
+            >
+              <chevron-right-icon/>
+            </div>
+          </div>
+          <div>
+            <div></div>
+            <div
+              class="bg-blue rounded-b-lg control"
+              @click="move('down')"
+              title="move down"
+            >
+              <chevron-down-icon/>
+            </div>
+            <div></div>
+          </div>
         </div>
-        <div>
-          <div
-            class="bg-blue rounded-l-lg control"
-            @click="move('left')"
-            title="move left"
-          >
-            <chevron-left-icon/>
-          </div>
-          <div class="bg-blue"></div>
-          <div
-            class="bg-blue rounded-r-lg control"
-            @click="move('right')"
-            title="move right"
-          >
-            <chevron-right-icon/>
-          </div>
-        </div>
-        <div>
-          <div></div>
-          <div
-            class="bg-blue rounded-b-lg control"
-            @click="move('down')"
-            title="move down"
-          >
-            <chevron-down-icon/>
-          </div>
-          <div></div>
+        <div v-else class="orientation-controls">
+          <button></button>
+          <button></button>
+          <button></button>
         </div>
       </div>
     </div>
     <div class="flex-1 bg-gray-lighter px-4 py-2 m-2 text-center align-middle">
-      <button class="emergency-stop">
+      <button
+        class="emergency-stop"
+        @click="stop"
+      >
         EMERGENCY<br>STOP
       </button>
     </div>
@@ -87,6 +107,11 @@ import { ChevronLeftIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, Lock
 
 export default {
   components: { ChevronLeftIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, LockIcon, UnlockIcon },
+  data () {
+    return {
+      yzControl: true
+    }
+  },
   computed: {
     gripperOpen () {
       return true
@@ -94,25 +119,10 @@ export default {
   },
   methods: {
     move (pos) {
-      const currentPos = this.$store.state.position
-      const orientation = this.$store.state.orientation
-      let computedPos = currentPos
-      switch (pos) {
-        case 'left':
-          computedPos.y = currentPos.y - 0.2
-        case 'down':
-          computedPos.z = currentPos.z - 0.2
-        case 'top':
-          computedPos.z = currentPos.z + 0.2
-        case 'right':
-          computedPos.y = currentPos.y + 0.2
-        case 'in':
-          computedPos.x = currentPos.x - 0.2
-        case 'out':
-          computedPos.x = currentPos.x + 0.2
-        default: break
-      }
-      this.$store.dispatch('move', { position: computedPos, orientation })
+      this.$store.dispatch('move', { direction: pos })
+    },
+    stop () {
+      this.$store.dispatch('stop')
     }
   }
 }
@@ -130,6 +140,9 @@ export default {
 
       >svg:not(.small)
         @apply w-full h-full
+
+.orientation-controls
+  @apply flex
 
 .control
   @apply cursor-pointer 
