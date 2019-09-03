@@ -16,6 +16,8 @@ export default {
   state: {
     ros: undefined,
     connected: false,
+    ip: '',
+    port: '',
     topics: {},
     position: undefined, // current position
     orientation: undefined // current orientation
@@ -25,11 +27,16 @@ export default {
     setRos (state, ros) {
       state.ros = ros
     },
-    connect (state) {
+    connect (state, payload) {
+      state.ip = payload.ip
+      state.port = payload.port
       state.connected = true
     },
     disconnect (state) {
       state.connected = false
+      state.ip = ''
+      state.port = ''
+      state.topics = {}
       state.ros = undefined
       state.position = undefined
       state.orientation = undefined
@@ -41,7 +48,6 @@ export default {
       Vue.delete(state.topic, payload.topic)
     },
     setPosition (state, position) {
-      console.log('setting position: ', position)
       state.position = position
     },
     setOrientation (state, payload) {
@@ -73,24 +79,24 @@ export default {
 
         ros.on('connection', () => {
           console.log('connected to webserver')
-          commit('connect')
+          commit('connect', payload)
           dispatch('subscribe', payload.topics) // init default topics
             .then(() => {
               dispatch('position') // init robot's current position
+              resolve()
             })
-          // resolve()
         })
 
         ros.on('error', (event) => {
           console.log('Error connecting to websocket server: ', event)
           commit('disconnect')
-          // reject()
+          reject()
         }),
 
         ros.on('close', (event) => {
           console.log('Connection to websocket server closed')//, event)
           commit('disconnect')
-          // reject()
+          reject()
         })
         resolve()
       })
@@ -124,46 +130,66 @@ export default {
         commit('resetTopic', topic)
       }
     },
-    position ({ state, commit }) {
+    position ({ state, commit }, payload) {
       const topicName = '/panda_movement_bridge/PosePublisher'
+      // const topicName = '/joint_states'
       const topic = new ROSLIB.Topic({
         ros: state.ros,
         name: topicName, // topic name
-        messageType: 'geometry_msgs/Pose' // topic's msg type
+        // messageType: 'geometry_msgs/Pose' // topic's msg type
+        messageType: 'geometry_msgs/Pose'
       })
 
       state.topics[topicName].subscribe((msg) => {
-        // check if payload differs to current state
         if (isNewPos(state, msg.position)) commit('setPosition', msg.position)
         if (isNewOrientation(state, msg.orientation)) commit('setOrientation', msg.orientation)
-        // console.log('Received message on ' + topicName + ': ' + JSON.stringify(msg))
       })
     },
     move ({ state, commit }, payload) {
       const topicName = '/panda_movement_bridge/PoseListener'
+      // const topicName = '/joint_states'
       const topic = new ROSLIB.Topic({
         ros: state.ros,
         name: topicName, // topic name
         messageType: 'geometry_msgs/Pose' // topic's msg type
       })
 
-      /* var poseMsg = new ROSLIB.Message({
-        position: { ...payload.position },
-        orientation: {
-          x: 0.707102,
-          y: -0.00000908329,
-          z: -0.707112,
-          w: 0.00000867363
-        }
-      }) */
+      let movement = state.position
+      switch (payload.direction) {
+        case 'up':
+          movement.z = movement.z + 0.5
+          break
+        case 'down':
+          movement.z = movement.z - 0.5
+          break
+        case 'left':
+          movement.y = movement.y - 0.5
+          break
+        case 'right':
+          movement.y = movement.y + 0.5
+          break
+        case 'in':
+          movement.x = movement.x - 0.5
+          break
+        case 'out':
+          movement.x = movement.x + 0.5
+          break
+        default: 
+          break
+      }
 
       var poseMsg = new ROSLIB.Message({
-        position: payload.position,
-        orientation: payload.orientation
+        position: movement,
+        orientation: state.orientation
       })
-
-      // topic.publish(poseMsg)
       state.topics[topicName].publish(poseMsg)
+    },
+    stop ({ state, commit }) {
+      const topicName = '/panda_movement_bridge/StopListener'
+
+      const msg = new ROSLIB.Message(true)
+
+      state.topics[topicName].publish(msg)
     }
   }
 }

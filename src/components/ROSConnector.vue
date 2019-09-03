@@ -17,7 +17,7 @@
       <!--<button class="button-basic" @click="listen">Listen</button>-->
     </div>
     <div>
-      <p v-if="$store.state.connected">Connected to {{ parameters.ip }}:{{ parameters.port }}</p>
+      <p v-if="$store.state.connected">Connected to {{ $store.state.ip }}:{{ $store.state.port }}</p>
       <p v-if="connecting" class="meta">Trying to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
       <p v-else-if="err">Unable to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
     </div>
@@ -25,6 +25,8 @@
       Position: {{ $store.state.position }}
       <br>
       orientation: {{ $store.state.orientation }}
+      <br>
+      Topics: {{ $store.state.topics }}
     </div>
   </div>
 </template>
@@ -36,14 +38,18 @@ export default {
       connecting: false,
       err: false,
       parameters: {
-        ip: '192.168.201.128',
+        // ip: '192.168.201.128',
+        ip: '172.17.74.42',
         port: '9090',
         topics: [
-          { name: '/panda_movement_bridge/PosePublisher',
-            messageType: 'geometry_msgs/Pose' }, // current position topic
-          { name: '/panda_movement_bridge/PoseListener',
-            messageType: 'geometry_msgs/Pose' } // goal position to move robot topic
-        ]
+            { name: '/panda_movement_bridge/PosePublisher', messageType: 'geometry_msgs/Pose' }, // current position topic
+            { name: '/panda_movement_bridge/PoseListener', messageType: 'geometry_msgs/Pose' }, // goal position to move robot topic */
+            { name: '/panda_movement_bridge/StopListener', messageType: 'std_msgs/Bool' }
+            // { name: '/franka_state_controller/franka_states', messageType: 'franka_msgs/FrankaState' },
+            // { name: '/franka_state_controller/franka_states', messageType: 'sensor_msgs/JointStates' },
+            // { name: '/joint_states', messageType: 'sensor_msgs/JointState' },
+            // { name: '/move_group/goal', messageType: 'moveit_msgs/MoveGroupActionGoal' }
+          ]
       }
     }
   },
@@ -65,9 +71,8 @@ export default {
       this.$store.dispatch('disconnect')
     },
     move () {
-      this.$store.dispatch('move', {
-        position: { x: 0.5, y: 0, z: 0 } }
-      )
+      console.log('robot should move')
+      this.$store.dispatch('move')
     },
     listen () {
       this.$store.dispatch('position')
