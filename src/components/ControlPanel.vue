@@ -4,10 +4,10 @@
       <div class="w-full">
         <ul class="flex border-b">
           <li class="-mb-px mr-1">
-            <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold" href="#" @class="yzControl = true">Position</a>
+            <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold" href="#" @click="yzControl = true">Position</a>
           </li>
           <li class="mr-1">
-            <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold" href="#" @class="yzControl = false">Orientation</a>
+            <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold" href="#" @click="yzControl = false">Orientation</a>
           </li>
         </ul>
       </div>
@@ -54,9 +54,27 @@
           </div>
         </div>
         <div v-else class="orientation-controls">
-          <button></button>
-          <button></button>
-          <button></button>
+          <div class="w-1/3">
+            <label for="orientation-direction">
+              Orientation Direction
+            </label>
+            <div class="relative">
+              <select class="block w-full" id="orientation-direction" v-model="direction">
+                <option value="y">Y</option>
+                <option value="x">X</option>
+                <option value="z">Z</option>
+              </select>
+            </div>
+          </div>
+          <div class="w-1/3">
+            <label for="orientation-angle">
+              Angle to turn
+            </label>
+            <input id="orientation-angle" type="text" class="block w-full" placeholder="enter angle..." v-model="handAngle" />
+          </div>
+          <div class="w-1/3">
+            <button class="button" @click="turnHand">Turn Hand</button>
+          </div>
         </div>
       </div>
     </div>
@@ -66,6 +84,12 @@
         @click="stop"
       >
         EMERGENCY<br>STOP
+      </button>
+      <button
+        class="emergency-stop"
+        @click="recover"
+      >
+        recover
       </button>
     </div>
     <div class="flex-1 bg-gray px-4 py-2 m-2 meta">
@@ -109,12 +133,17 @@ export default {
   components: { ChevronLeftIcon, ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, LockIcon, UnlockIcon },
   data () {
     return {
-      yzControl: true
+      yzControl: true,
+      direction: 'y',
+      handAngle: 0
     }
   },
   computed: {
     gripperOpen () {
       return true
+    },
+    validAngle () {
+      return Number.isInteger(this.handAngle) && ( -360 < handAngle < 360 )
     }
   },
   methods: {
@@ -123,6 +152,12 @@ export default {
     },
     stop () {
       this.$store.dispatch('stop')
+    },
+    turnHand () {
+      this.$store.dispatch('turnHand', { direction: this.direction, angle: this.handAngle })
+    },
+    recover () {
+      this.$store.dispatch('recover')
     }
   }
 }
@@ -142,7 +177,7 @@ export default {
         @apply w-full h-full
 
 .orientation-controls
-  @apply flex
+  @apply flex w-full
 
 .control
   @apply cursor-pointer 

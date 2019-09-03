@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import quaternion from '../util/quaternion.js'
 
 const isNewPos = (state, pos) => {
   const oldPos = JSON.stringify(state.position)
@@ -157,22 +158,22 @@ export default {
       let movement = state.position
       switch (payload.direction) {
         case 'up':
-          movement.z = movement.z + 0.5
+          movement.z = movement.z + 0.1
           break
         case 'down':
-          movement.z = movement.z - 0.5
+          movement.z = movement.z - 0.1
           break
         case 'left':
-          movement.y = movement.y - 0.5
+          movement.y = movement.y - 0.1
           break
         case 'right':
-          movement.y = movement.y + 0.5
+          movement.y = movement.y + 0.1
           break
         case 'in':
-          movement.x = movement.x - 0.5
+          movement.x = movement.x - 0.05
           break
         case 'out':
-          movement.x = movement.x + 0.5
+          movement.x = movement.x + 0.05
           break
         default: 
           break
@@ -184,6 +185,21 @@ export default {
       })
       state.topics[topicName].publish(poseMsg)
     },
+
+    turnHand ({ state, commit }, { direction, angle }) {
+      const topicName = '/panda_movement_bridge/PoseListener'
+      const computedTurn = quaternion.turn(state.orientation, direction, angle)
+      const poseMsg = { position: state.position, orientation: computedTurn }
+
+      state.topics[topicName].publish(poseMsg)
+      commit('setOrientation', computedTurn)
+    },
+
+    recover({ state, commit }) {
+      const topicName = '/franka_control/error_recovery/goal'
+      state.topics[topicName].publish({})
+    },
+
     stop ({ state, commit }) {
       const topicName = '/panda_movement_bridge/StopListener'
 

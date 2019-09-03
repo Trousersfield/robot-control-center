@@ -44,11 +44,8 @@ export default {
         topics: [
             { name: '/panda_movement_bridge/PosePublisher', messageType: 'geometry_msgs/Pose' }, // current position topic
             { name: '/panda_movement_bridge/PoseListener', messageType: 'geometry_msgs/Pose' }, // goal position to move robot topic */
-            { name: '/panda_movement_bridge/StopListener', messageType: 'std_msgs/Bool' }
-            // { name: '/franka_state_controller/franka_states', messageType: 'franka_msgs/FrankaState' },
-            // { name: '/franka_state_controller/franka_states', messageType: 'sensor_msgs/JointStates' },
-            // { name: '/joint_states', messageType: 'sensor_msgs/JointState' },
-            // { name: '/move_group/goal', messageType: 'moveit_msgs/MoveGroupActionGoal' }
+            { name: '/panda_movement_bridge/StopListener', messageType: 'std_msgs/Bool' },
+            { name: '/franka_control/error_recovery/goal', messageType: 'franka_control/ErrorRecoveryActionGoal' }
           ]
       }
     }
