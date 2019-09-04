@@ -5,7 +5,7 @@
         <robot-model></robot-model>
       </div>
       <div class="flex-1 bg-gray-lighter px-4 py-2 m-2">
-        <camera-stream></camera-stream>
+        <profile></profile>
       </div>
     </div>
     <control-panel></control-panel>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import CameraStream from '../components/CameraStream.vue'
+import Profile from '../components/Profile.vue'
 import ControlPanel from '../components/ControlPanel.vue'
 import RobotModel from '../components/RobotModel.vue'
 
@@ -22,7 +22,7 @@ export default {
     console.log('Control Center called')
   },
   components: {
-    CameraStream, ControlPanel, RobotModel
+    Profile, ControlPanel, RobotModel
   }
 }
 </script>

@@ -19,9 +19,10 @@ export default {
     connected: false,
     ip: '',
     port: '',
-    topics: {},
+    topics: [],
     position: undefined, // current position
-    orientation: undefined // current orientation
+    orientation: undefined, // current orientation
+    gripper: undefined
   },
 
   mutations: {
@@ -37,16 +38,20 @@ export default {
       state.connected = false
       state.ip = ''
       state.port = ''
-      state.topics = {}
+      state.topics = []
       state.ros = undefined
       state.position = undefined
       state.orientation = undefined
     },
-    setTopic (state, topic) {
-      Vue.set(state.topics, topic.name, topic)
+    addTopic (state, topic) {
+      const idx = state.topics.findIndex(t => t.name === topic.name)
+      if (idx < 0) state.topics.push(topic)
+      // Vue.set(state.topics, topic.name, topic)
     },
-    resetTopic (state, payload) {
-      Vue.delete(state.topic, payload.topic)
+    removeTopic (state, payload) {
+      const idx = state.topics.findIndex(t => t.name === topic.name)
+      if (idx > -1) state.topics.splice(idx, 1)
+      // Vue.delete(state.topic, payload.topic)
     },
     setPosition (state, position) {
       state.position = position
@@ -117,7 +122,7 @@ export default {
               name: entry.name, // topic name
               messageType: entry.messageType // topic's msg type
             })
-            commit('setTopic', topic)
+            commit('addTopic', topic)
           } else console.log('already subscribed to topic ', entry.name)
         }
         resolve()
@@ -128,7 +133,7 @@ export default {
 
       if (state.topics[topic]) {
         state.topics[topic].unsubscribe()
-        commit('resetTopic', topic)
+        commit('removeTopic', topic)
       }
     },
     position ({ state, commit }, payload) {
@@ -204,6 +209,16 @@ export default {
       const topicName = '/panda_movement_bridge/StopListener'
 
       const msg = new ROSLIB.Message(true)
+
+      state.topics[topicName].publish(msg)
+    },
+
+    moveGripper ({ state, commit }, payload) {
+      const topicName = 'gripper'
+      
+      // define gripper message
+      console.log('gripper payload: ', payload)
+      const msg = new ROSLIB.Message(payload)
 
       state.topics[topicName].publish(msg)
     }

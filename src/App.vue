@@ -21,14 +21,13 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 import ControlCenter from './views/ControlCenter.vue'
 import MainMenu from './components/MainMenu.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld, ControlCenter, MainMenu
+    ControlCenter, MainMenu
   }
 }
 </script>

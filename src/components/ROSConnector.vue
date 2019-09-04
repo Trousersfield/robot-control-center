@@ -11,23 +11,17 @@
       </div>
     </div>
     <div class="flex content-center justify-between flex-wrap p-2">
-      <button v-if="$store.state.connected" class="button-basic" @click="disconnect">Disconnect</button>
-      <button v-else class="button-basic" @click="connect" :disabled="connecting">Connect</button>
-      <button class="button-basic" @click="move">Move</button>
-      <!--<button class="button-basic" @click="listen">Listen</button>-->
+      <button v-if="$store.state.connected" class="button" @click="disconnect">Disconnect</button>
+      <button v-else class="button" @click="connect" :disabled="connecting">Connect</button>
     </div>
     <div>
-      <p v-if="$store.state.connected">Connected to {{ $store.state.ip }}:{{ $store.state.port }}</p>
+      <p class="info" v-if="$store.state.connected">Connected to {{ $store.state.ip }}:{{ $store.state.port }}</p>
       <p v-if="connecting" class="meta">Trying to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
-      <p v-else-if="err">Unable to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
+      <p class="warning" v-else-if="err">Unable to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
     </div>
-    <div>
-      Position: {{ $store.state.position }}
-      <br>
-      orientation: {{ $store.state.orientation }}
-      <br>
-      Topics: {{ $store.state.topics }}
-    </div>
+    <!--<div v-if="$store.state." class="flex flex-col">
+      <div ></div>
+    </div>-->
   </div>
 </template>
 
@@ -45,7 +39,8 @@ export default {
             { name: '/panda_movement_bridge/PosePublisher', messageType: 'geometry_msgs/Pose' }, // current position topic
             { name: '/panda_movement_bridge/PoseListener', messageType: 'geometry_msgs/Pose' }, // goal position to move robot topic */
             { name: '/panda_movement_bridge/StopListener', messageType: 'std_msgs/Bool' },
-            { name: '/franka_control/error_recovery/goal', messageType: 'franka_control/ErrorRecoveryActionGoal' }
+            { name: '/franka_control/error_recovery/goal', messageType: 'franka_control/ErrorRecoveryActionGoal' },
+            { name: 'gripper', messageType: 'gripper' }
           ]
       }
     }
@@ -66,15 +61,7 @@ export default {
     },
     disconnect () {
       this.$store.dispatch('disconnect')
-    },
-    move () {
-      console.log('robot should move')
-      this.$store.dispatch('move')
-    },
-    listen () {
-      this.$store.dispatch('position')
     }
   }
-  // rostopic echo /panda_movement_bridge/PosePublisher
 }
 </script>
