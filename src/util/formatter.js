@@ -1,6 +1,7 @@
 const qte = require('quaternion-to-euler')
 
 const toEuler = quat => {
+  if (!quat) return
   let eulerOri = qte([quat.y, quat.x, quat.z, quat.w])
   let formattedOri = {
     Y: `${((eulerOri[0] / (2 * Math.PI))  * 360).toFixed(6)}\xB0`,
@@ -11,6 +12,7 @@ const toEuler = quat => {
 }
 
 const prettyPos = pos => {
+  if (!pos) return
   let formattedPos = {
     Y: pos.y.toFixed(6),
     X: pos.x.toFixed(6),

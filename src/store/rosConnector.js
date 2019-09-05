@@ -13,6 +13,11 @@ const isNewOrientation = (state, orientation) => {
   return oldOrientation !== newOrientation
 }
 
+const publishMsg = (state, topicName, msg) => {
+  const idx = state.topics.findIndex(t => t.name === topicName)
+  if (idx > -1) state.topics[idx].publish(msg)
+}
+
 export default {
   state: {
     ros: undefined,
@@ -22,7 +27,13 @@ export default {
     topics: [],
     position: undefined, // current position
     orientation: undefined, // current orientation
-    gripper: undefined
+    gripper: {
+      width: undefined,
+      speed: undefined,
+      opening: false,
+      closing: false
+    },
+    speed: undefined
   },
 
   mutations: {
@@ -46,7 +57,6 @@ export default {
     addTopic (state, topic) {
       const idx = state.topics.findIndex(t => t.name === topic.name)
       if (idx < 0) state.topics.push(topic)
-      // Vue.set(state.topics, topic.name, topic)
     },
     removeTopic (state, payload) {
       const idx = state.topics.findIndex(t => t.name === topic.name)
@@ -67,6 +77,9 @@ export default {
       state.position = undefined
       state.orientation = undefined
     },
+    setSpeed (state, speed) {
+      state.speed = speed
+    }
   },
 
   actions: {
@@ -84,7 +97,7 @@ export default {
         commit('setRos', ros)
 
         ros.on('connection', () => {
-          console.log('connected to webserver')
+          console.log('connected to rosbridge')
           commit('connect', payload)
           dispatch('subscribe', payload.topics) // init default topics
             .then(() => {
@@ -146,7 +159,8 @@ export default {
         messageType: 'geometry_msgs/Pose'
       })
 
-      state.topics[topicName].subscribe((msg) => {
+      const idx = state.topics.findIndex(t => t.name === topicName)
+      state.topics[idx].subscribe((msg) => {
         if (isNewPos(state, msg.position)) commit('setPosition', msg.position)
         if (isNewOrientation(state, msg.orientation)) commit('setOrientation', msg.orientation)
       })
@@ -163,16 +177,16 @@ export default {
       let movement = state.position
       switch (payload.direction) {
         case 'up':
-          movement.z = movement.z + 0.1
+          movement.z = movement.z + 0.3
           break
         case 'down':
-          movement.z = movement.z - 0.1
+          movement.z = movement.z - 0.3
           break
         case 'left':
-          movement.y = movement.y - 0.1
+          movement.y = movement.y - 0.3
           break
         case 'right':
-          movement.y = movement.y + 0.1
+          movement.y = movement.y + 0.3
           break
         case 'in':
           movement.x = movement.x - 0.05
@@ -188,7 +202,8 @@ export default {
         position: movement,
         orientation: state.orientation
       })
-      state.topics[topicName].publish(poseMsg)
+
+      publishMsg(state, topicName, poseMsg)
     },
 
     turnHand ({ state, commit }, { direction, angle }) {
@@ -196,13 +211,14 @@ export default {
       const computedTurn = quaternion.turn(state.orientation, direction, angle)
       const poseMsg = { position: state.position, orientation: computedTurn }
 
-      state.topics[topicName].publish(poseMsg)
+      publishMsg(state, topicName, poseMsg)
       commit('setOrientation', computedTurn)
     },
 
     recover({ state, commit }) {
       const topicName = '/franka_control/error_recovery/goal'
-      state.topics[topicName].publish({})
+
+      publishMsg(state, topicName, {})
     },
 
     stop ({ state, commit }) {
@@ -210,17 +226,23 @@ export default {
 
       const msg = new ROSLIB.Message(true)
 
-      state.topics[topicName].publish(msg)
+      publishMsg(state, topicName, msg)
     },
 
-    moveGripper ({ state, commit }, payload) {
-      const topicName = 'gripper'
-      
-      // define gripper message
-      console.log('gripper payload: ', payload)
-      const msg = new ROSLIB.Message(payload)
+    moveGripper ({ state, commit }, msg) {
+      const topicName = '/panda_movement_bridge/GripperListenerMove'
 
-      state.topics[topicName].publish(msg)
+      publishMsg(state, topicName, msg)
+      commit('setGripper')
+    },
+
+    setSpeed ({ state, commit}, speed) {
+      const topicName = '/panda_movement_bridge/SpeedListener'
+
+      const msg = { data: speed }
+
+      publishMsg(state, topicName, msg)
+      commit('setSpeed', speed)
     }
   }
 }

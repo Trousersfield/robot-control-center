@@ -55,10 +55,10 @@
         </div>
         <div class="card">
           <div class="header">
-            Joint Controls
+            Speed Controls
           </div>
           <div class="content">
-            Control your joints here
+            <speed-controls />
           </div>
         </div>
       </div>
@@ -68,8 +68,12 @@
 
 <script>
 import formatter from '../util/formatter.js'
+import SpeedControls from '../components/controls/speedControls.vue'
 
 export default {
+  components: {
+    SpeedControls
+  },
   computed: {
     positionIsSet () {
       return this.$store.state.connected && this.$store.state.position
@@ -78,7 +82,7 @@ export default {
       return this.$store.state.connected && this.$store.state.orientation
     },
     gripperIsSet () {
-      return this.$store.state.connected && this.$store.state.gripper
+      return this.$store.state.connected && this.$store.state.gripper.width
     },
     position () {
       return formatter.prettyPos(this.$store.state.position)
@@ -96,6 +100,9 @@ export default {
     }
   },
   methods: {
+    setSpeed (speed) {
+      this.$store.dispatch('setSpeed', { data: speed })
+    }
   }
 }
 </script>

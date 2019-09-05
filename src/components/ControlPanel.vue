@@ -1,8 +1,9 @@
 <template>
   <div class="w-full flex flex-row">
     <div class="flex-1 flex-col bg-gray-lighter px-4 py-2 m-2 left-0">
-      <div class="w-full">
-        <yz-controls/>
+      <div class="w-full flex">
+        <yz-controls class="flex-1" />
+        <x-controls class="flex-1" />
         <!--<div v-else class="orientation-controls">
           <div class="w-1/3">
             <label for="orientation-direction">
@@ -41,10 +42,12 @@
       >
         recover
       </button>
-      <gripper-controls />
     </div>
-    <div class="flex-1 bg-gray-lighter px-4 py-2 m-2 meta">
-      <x-controls />
+    <div class="flex-1 bg-gray-lighter px-4 py-2 m-2">
+      <div class="flex flex-col">
+        <h6 class="text-center mb-3">Gripper Controls</h6>
+        <gripper-controls />
+      </div>
     </div>
   </div>
 </template>
