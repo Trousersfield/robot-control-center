@@ -66,7 +66,7 @@ export default {
         default:
           break
       }
-      this.$store.dispatch('moveGripper', { width: width, speed: this.speed })
+      this.$store.dispatch('moveGripper', { width: width, speed: parseFloat(this.speed) })
     }
   }
 }

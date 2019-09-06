@@ -18,9 +18,6 @@ import ControlPanel from '../components/ControlPanel.vue'
 import RobotModel from '../components/RobotModel.vue'
 
 export default {
-  async beforeMount() {
-    console.log('Control Center called')
-  },
   components: {
     Profile, ControlPanel, RobotModel
   }

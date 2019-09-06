@@ -62,6 +62,24 @@
           </div>
         </div>
       </div>
+      <div>
+        <div class="card">
+          <div class="header">
+            Joint States
+            <p v-if="jointsSet" class="success">live</p>
+          </div>
+          <div class="content">
+            <joint-controls v-if="jointsSet" />
+            <!--<template v-if="jointsSet">
+              <div class="profile-entry" v-for="(value, key) in joints" :key="key">
+                <p class="font-bold">{{ key }}: </p>{{ value }}
+              </div>
+            </template>-->
+            <p v-else class="warning">no joint state data available</p>
+          </div>
+        </div>
+      </div>
+      {{ $store.state.gripper }}
     </div>
   </div>
 </template>
@@ -69,10 +87,12 @@
 <script>
 import formatter from '../util/formatter.js'
 import SpeedControls from '../components/controls/speedControls.vue'
+import JointControls from '../components/controls/jointControls.vue'
+import { format } from 'path';
 
 export default {
   components: {
-    SpeedControls
+    SpeedControls, JointControls
   },
   computed: {
     positionIsSet () {
@@ -83,6 +103,9 @@ export default {
     },
     gripperIsSet () {
       return this.$store.state.connected && this.$store.state.gripper.width
+    },
+    jointsSet () {
+      return this.$store.state.connected && this.$store.getters['jointsSet']
     },
     position () {
       return formatter.prettyPos(this.$store.state.position)

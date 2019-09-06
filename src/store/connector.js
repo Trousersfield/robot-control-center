@@ -1,21 +1,24 @@
-import Vue from 'vue'
 import quaternion from '../util/quaternion.js'
-
-const isNewPos = (state, pos) => {
-  const oldPos = JSON.stringify(state.position)
-  const newPos = JSON.stringify(pos)
-  return oldPos !== newPos
-}
-
-const isNewOrientation = (state, orientation) => {
-  const oldOrientation = JSON.stringify(state.orientation)
-  const newOrientation = JSON.stringify(orientation)
-  return oldOrientation !== newOrientation
-}
+import service from '../util/service.js'
+import topic from '../util/topic.js'
 
 const publishMsg = (state, topicName, msg) => {
   const idx = state.topics.findIndex(t => t.name === topicName)
   if (idx > -1) state.topics[idx].publish(msg)
+}
+
+const callService = (state, serviceName, request) => {
+  const idx = state.services.findIndex(s => s.name === serviceName)
+  console.log('id: ', idx)
+  console.log('services: ', state.services)
+  if (idx > -1) state.services[idx].callService(request, result => {
+    console.log('service result: ', result)
+    const stateKeys = Object.keys(state)
+    Object.keys(result).forEach(key => {
+      if (!stateKeys.includes(key)) return // unable to properly map result dimension
+      state[key] = result[key]
+    })
+  })
 }
 
 export default {
@@ -25,15 +28,41 @@ export default {
     ip: '',
     port: '',
     topics: [],
+    services: [],
     position: undefined, // current position
     orientation: undefined, // current orientation
     gripper: {
-      width: undefined,
-      speed: undefined,
-      opening: false,
-      closing: false
+      effort: undefined,
+      header: undefined,
+      name: undefined,
+      position: undefined,
+      velocity: undefined,
     },
-    speed: undefined
+    speed: undefined,
+    joint0: undefined,
+    joint1: undefined,
+    joint2: undefined,
+    joint3: undefined,
+    joint4: undefined,
+    joint5: undefined,
+    joint6: undefined
+  },
+
+  getters: {
+    jointsSet: state => {
+      return state.joint0 && state.joint1 && state.joint2 && state.joint3 && state.joint4 && state.joint5 && state.joint6
+    },
+    joints: state => {
+      return {
+        joint0: state.joint0,
+        joint1: state.joint1,
+        joint2: state.joint2,
+        joint3: state.joint3,
+        joint4: state.joint4,
+        joint5: state.joint5,
+        joint6: state.joint6,
+      }
+    }
   },
 
   mutations: {
@@ -52,16 +81,26 @@ export default {
       state.topics = []
       state.ros = undefined
       state.position = undefined
-      state.orientation = undefined
+      state.orientation = undefined,
+      state.speed = undefined,
+      state.joints = {}
     },
     addTopic (state, topic) {
       const idx = state.topics.findIndex(t => t.name === topic.name)
       if (idx < 0) state.topics.push(topic)
     },
-    removeTopic (state, payload) {
+    removeTopic (state, topic) {
       const idx = state.topics.findIndex(t => t.name === topic.name)
       if (idx > -1) state.topics.splice(idx, 1)
-      // Vue.delete(state.topic, payload.topic)
+    },
+    addService (state, service) {
+      const idx = state.services.findIndex(s => s.name === service.name)
+      if (idx < 0) state.services.push(service)
+      console.log('service added: ', state.services)
+    },
+    removeService (state, service) {
+      const idx = state.topics.findIndex(s => s.name === service.name)
+      if (idx > -1) state.services.splice(idx, 1)
     },
     setPosition (state, position) {
       state.position = position
@@ -79,6 +118,19 @@ export default {
     },
     setSpeed (state, speed) {
       state.speed = speed
+    },
+    setGripper (state, payload) {
+      state.gripper = payload
+    },
+    // variable updates
+    softUpdate (state, payload) {
+      const stateKeys = Object.keys(state)
+      Object.keys(payload.res).forEach(key => {
+        if (payload.topic.name.includes('gripper')) state.gripper[key] = payload.res[key]
+        else if (stateKeys.includes(key)) {
+          state[key] = payload.res[key]
+        }
+      })
     }
   },
 
@@ -99,11 +151,16 @@ export default {
         ros.on('connection', () => {
           console.log('connected to rosbridge')
           commit('connect', payload)
-          dispatch('subscribe', payload.topics) // init default topics
+          
+          // initialize topics
+          dispatch('subscribe')
             .then(() => {
-              dispatch('position') // init robot's current position
+              dispatch('initPublishers')
               resolve()
             })
+          
+          // initialize services
+          dispatch('serviceRequest')
         })
 
         ros.on('error', (event) => {
@@ -124,12 +181,15 @@ export default {
       state.ros.close()
       commit('disconnect')
     },
-    subscribe ({ commit, state }, payload) {
+    subscribe ({ commit, state }) {
+      const listeners = topic.listeners
+      const publishers = topic.publishers
       return new Promise(resolve => {
         if (!state.connected) resolve()
 
-        for (let entry of payload) {
-          if (!state.topics[entry.name]) {
+        for (let entry of [...listeners, ...publishers]) {
+          const idx = state.topics.findIndex(t => t.name === entry.name)
+          if (!state.topics[idx]) {
             const topic = new ROSLIB.Topic({
               ros: state.ros,
               name: entry.name, // topic name
@@ -141,29 +201,43 @@ export default {
         resolve()
       })
     },
+    serviceRequest ({ commit, state }) {
+      if (!state.connected) return
+      const services = service.services
+
+      for (let entry of services) {
+        const idx = state.services.findIndex(t => t.name === entry.name)
+        if (!state.services[idx]) {
+          const newService = new ROSLIB.Service({
+            ros: state.ros,
+            name: entry.name,
+            serviceType: entry.serviceType
+          })
+          commit('addService', newService)
+        } else console.log('already requested service ', entry.name)
+
+        // init service with empty request
+        if (entry.emptyRequest) callService(state, entry.name, entry.emptyRequest)
+      }
+    },
     unsubscribe ({ commit, state }, topic) {
       if (!state.connected) return
+      const idx = state.topics.findIndex(t => t.name === topic)
 
-      if (state.topics[topic]) {
-        state.topics[topic].unsubscribe()
+      if (idx > -1) {
+        state.topics[idx].unsubscribe()
         commit('removeTopic', topic)
       }
     },
-    position ({ state, commit }, payload) {
-      const topicName = '/panda_movement_bridge/PosePublisher'
-      // const topicName = '/joint_states'
-      const topic = new ROSLIB.Topic({
-        ros: state.ros,
-        name: topicName, // topic name
-        // messageType: 'geometry_msgs/Pose' // topic's msg type
-        messageType: 'geometry_msgs/Pose'
-      })
+    initPublishers ({ state, commit }) {
+      const publishers = topic.publishers
 
-      const idx = state.topics.findIndex(t => t.name === topicName)
-      state.topics[idx].subscribe((msg) => {
-        if (isNewPos(state, msg.position)) commit('setPosition', msg.position)
-        if (isNewOrientation(state, msg.orientation)) commit('setOrientation', msg.orientation)
-      })
+      for (let topic of publishers) {
+        const idx = state.topics.findIndex(t => t.name === topic.name)
+        state.topics[idx].subscribe(res => {
+          commit('softUpdate', { topic: topic, res: res })
+        })
+      }
     },
     move ({ state, commit }, payload) {
       const topicName = '/panda_movement_bridge/PoseListener'
@@ -233,7 +307,7 @@ export default {
       const topicName = '/panda_movement_bridge/GripperListenerMove'
 
       publishMsg(state, topicName, msg)
-      commit('setGripper')
+      commit('setGripper', msg)
     },
 
     setSpeed ({ state, commit}, speed) {
@@ -243,6 +317,45 @@ export default {
 
       publishMsg(state, topicName, msg)
       commit('setSpeed', speed)
+    },
+
+    serviceMove ({ state, commit }) {
+      const serviceName = '/panda_movement_bridge/JointService'
+
+      const request = {
+        joint0: -0.2,
+        joint1: 0,
+        joint2: 0,
+        joint3: 0,
+        joint4: 0,
+        joint5: 0,
+        joint6: 0
+      }
+
+      callService(state, serviceName, request)
+    },
+
+    serviceSpeed ({ state, commit }) {
+      const serviceName = '/panda_movement_bridge/moveSpeedService'
+
+      const request = {
+        moveSpeed: 0.2
+      }
+
+      callService(state, serviceName, request)
+    },
+
+    turnJoint ({ state, getters, commit }, payload) {
+      const serviceName = '/panda_movement_bridge/JointService'
+
+      let request = {}
+      Object.keys(getters.joints).forEach(key => {
+        request[key] = 0
+      })
+      request = Object.assign(request, payload)
+      console.log('request: ', request)
+
+      callService(state, serviceName, request)
     }
   }
 }

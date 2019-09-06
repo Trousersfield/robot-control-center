@@ -34,21 +34,7 @@ export default {
       parameters: {
         // ip: '192.168.201.128',
         ip: '172.17.74.42',
-        port: '9090',
-        topics: [
-            // current position topic
-            { name: '/panda_movement_bridge/PosePublisher', messageType: 'geometry_msgs/Pose' },
-            // goal position to move robot topic
-            { name: '/panda_movement_bridge/PoseListener', messageType: 'geometry_msgs/Pose' },
-            { name: '/panda_movement_bridge/StopListener', messageType: 'std_msgs/Bool' },
-            { name: '/franka_control/error_recovery/goal', messageType: 'franka_control/ErrorRecoveryActionGoal' },
-            // gripper topics
-            { name: '/panda_movement_bridge/GripperListenerMove', messageType: 'franka_gripper/MoveGoal' },
-            { name: '/panda_movement_bridge/GripperListenerGrasp', messageType: 'franka_gripper/GraspGoal' },
-            // robot speed topics
-            { name: '/panda_movement_bridge/SpeedPublisher', messageType: 'std_msgs/Float64' },
-            { name: '/panda_movement_bridge/SpeedListener', messageType: 'std_msgs/Float64' }
-          ]
+        port: '9090'
       }
     }
   },

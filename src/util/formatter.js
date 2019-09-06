@@ -22,6 +22,7 @@ const prettyPos = pos => {
 }
 
 const prettyOrientation = (ori, toAngle = false) => {
+  if (!ori) return
   let formattedOri = toAngle ? toEuler(ori) : {
     Y: ori.y.toFixed(6),
     X: ori.x.toFixed(6),
@@ -31,6 +32,15 @@ const prettyOrientation = (ori, toAngle = false) => {
   return formattedOri
 }
 
+const prettyJoints = (joints) => {
+  if (!joints) return
+  let formattedJoints = {}
+  Object.keys(joints).forEach(key => {
+    formattedJoints[key] = joints[key].toFixed(6)
+  })
+  return formattedJoints
+}
+
 export default {
-  prettyPos, prettyOrientation
+  prettyPos, prettyOrientation, prettyJoints
 }
