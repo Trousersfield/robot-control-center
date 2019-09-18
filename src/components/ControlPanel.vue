@@ -4,40 +4,17 @@
       <div class="w-full flex">
         <yz-controls class="flex-1" />
         <x-controls class="flex-1" />
-        <!--<div v-else class="orientation-controls">
-          <div class="w-1/3">
-            <label for="orientation-direction">
-              Orientation Direction
-            </label>
-            <div class="relative">
-              <select class="block w-full" id="orientation-direction" v-model="direction">
-                <option value="y">Y</option>
-                <option value="x">X</option>
-                <option value="z">Z</option>
-              </select>
-            </div>
-          </div>
-          <div class="w-1/3">
-            <label for="orientation-angle">
-              Angle to turn
-            </label>
-            <input id="orientation-angle" type="text" class="block w-full" placeholder="enter angle..." v-model="handAngle" />
-          </div>
-          <div class="w-1/3">
-            <button class="button" @click="turnHand">Turn Hand</button>
-          </div>
-        </div>-->
       </div>
     </div>
     <div class="flex-1 bg-gray-lighter px-4 py-2 m-2 text-center align-middle">
       <button
-        class="emergency-stop"
+        class="button"
         @click="stop"
       >
-        EMERGENCY<br>STOP
+        STOP
       </button>
       <button
-        class="emergency-stop"
+        class="button"
         @click="recover"
       >
         recover

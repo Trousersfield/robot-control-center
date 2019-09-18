@@ -4,6 +4,11 @@
     <video v-if="streamLive">
       <source src="video.ogg" type="video/ogg">
     </video>
+    <img
+      v-if="streamLive"
+      src="http://172.17.74.42:8080/stream_viewer?topic=/camera/color/image_raw"
+      crossorigin="anonymus"
+    >
     <img v-else src="../assets/robot-model.jpg" >
   </div>
 </template>

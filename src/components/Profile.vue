@@ -58,7 +58,8 @@
             Speed Controls
           </div>
           <div class="content">
-            <speed-controls />
+            <speed-controls v-if="$store.state.connector.connected" />
+            <p v-else class="warning">robot not connected</p>
           </div>
         </div>
       </div>
@@ -70,16 +71,10 @@
           </div>
           <div class="content">
             <joint-controls v-if="jointsSet" />
-            <!--<template v-if="jointsSet">
-              <div class="profile-entry" v-for="(value, key) in joints" :key="key">
-                <p class="font-bold">{{ key }}: </p>{{ value }}
-              </div>
-            </template>-->
             <p v-else class="warning">no joint state data available</p>
           </div>
         </div>
       </div>
-      {{ $store.state.connector.gripper }}
     </div>
   </div>
 </template>
@@ -95,17 +90,20 @@ export default {
     SpeedControls, JointControls
   },
   computed: {
+    connected () {
+      return this.$store.state.connector.connected
+    },
     positionIsSet () {
-      return this.$store.state.connector.connected && this.$store.state.connector.position
+      return this.connected && this.$store.state.connector.position
     },
     orientationIsSet () {
-      return this.$store.state.connector.connected && this.$store.state.connector.orientation
+      return this.connected && this.$store.state.connector.orientation
     },
     gripperIsSet () {
-      return this.$store.state.connector.connected && this.$store.state.connector.gripper.width
+      return this.connected && this.$store.state.connector.gripper.width
     },
     jointsSet () {
-      return this.$store.state.connector.connected && this.$store.getters['connector/jointsSet']
+      return this.connected && this.$store.getters['connector/jointsSet']
     },
     position () {
       return formatter.prettyPos(this.$store.state.connector.position)

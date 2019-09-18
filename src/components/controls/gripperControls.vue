@@ -3,13 +3,13 @@
     <div class="flex justify-center">
       <div class="button-group">
         <button
-          @click="moveGripper('open')"
+          @click="move('open')"
           :class="{ active: !maxOpened, active: opening, disabled: disabled }"
         >
           OPEN
         </button>
         <button
-          @click="moveGripper('close')"
+          @click="move('close')"
           :class="{ active: !maxClosed, active: closing, disabled: disabled }"
         >
           CLOSE
@@ -54,7 +54,7 @@ export default {
     }
   },
   methods: {
-    moveGripper (direction) {
+    move (direction) {
       let width = this.$store.state.connector.gripper.width
       switch (direction) {
         case 'open':

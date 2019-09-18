@@ -1,14 +1,15 @@
 .button
   @apply bg-blue text-white font-bold py-2 px-4 rounded
   
-  &:hover,not(.disabled)
+  &:not(.disabled):hover
     @apply bg-blue-darker
   
-  &:focus,not(.disabled)
+  &:not(.disabled):hover
     @apply shadow-outline
   
   &[disabled]
     @apply bg-blue-lightest cursor-not-allowed
+    
 
 .button-group
   @apply inline-flex

@@ -6,7 +6,7 @@
         <input id="ip" type="text" placeholder="192.168.1.1" v-model="parameters.ip">
       </div>
       <div class="w-1/3 input-basic">
-        <label for="port">Port</label>  
+        <label for="port">Port</label>
         <input id="port" type="text" placeholder="9090" v-model="parameters.port">
       </div>
     </div>
@@ -23,6 +23,10 @@
 </template>
 
 <script>
+import { setTimeout } from 'timers';
+
+let debounce = undefined
+
 export default {
   data: () => {
     return {
@@ -39,14 +43,15 @@ export default {
     connect () {
       this.connecting = true
       this.$store.dispatch('connector/connect', this.parameters)
-        .then((res) => {
-          if (res) console.log('res: ', res)
+        .then(() => {
           this.connecting = false
-        })
-        .catch(error => {
-          this.connecting = false
-          this.err = true
-          console.log('Unable to connect to websocket server: ', error)
+          if (!this.$store.state.connector.connected) {
+            this.err = true
+            if (this.debounce) this.debounce.close()
+            this.debounce = setTimeout(() => {
+              this.err = false
+            }, 5000)
+          }
         })
     },
     disconnect () {
