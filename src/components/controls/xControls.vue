@@ -4,7 +4,7 @@
       <div
         class="control rounded-t-lg"
         title="move in"
-        @click="move('in')"
+        @click="$emit('move', 'in')"
       >
         <chevron-up-icon/>
       </div>
@@ -16,7 +16,7 @@
       <div
         class="control rounded-b-lg"
         title="move out"
-        @click="move('out')"
+        @click="$emit('move', 'out')"
       >
         <chevron-down-icon/>
       </div>

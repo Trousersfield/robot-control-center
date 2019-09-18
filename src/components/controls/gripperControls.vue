@@ -55,13 +55,14 @@ export default {
   },
   methods: {
     move (direction) {
-      let width = this.$store.state.connector.gripper.width
+      let width = this.$store.state.connector.gripper.position[0]
+      console.log('width: ', width)
       switch (direction) {
         case 'open':
-          width += 0.02
+          width = width + 0.02
           break
         case 'close':
-          width -= 0.02
+          width = width - 0.02
           break
         default:
           break

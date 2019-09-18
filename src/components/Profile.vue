@@ -46,7 +46,7 @@
           </div>
           <div class="content">
             <template v-if="gripperIsSet">
-              <div class="profile-entry" v-for="(value, key) in position" :key="key">
+              <div class="profile-entry" v-for="(value, key) in gripper" :key="key">
                 <p class="font-bold">{{ key }}: </p>{{ value }}
               </div>
             </template>
@@ -83,7 +83,6 @@
 import formatter from '../util/formatter.js'
 import SpeedControls from '../components/controls/speedControls.vue'
 import JointControls from '../components/controls/jointControls.vue'
-import { format } from 'path';
 
 export default {
   components: {
@@ -100,7 +99,7 @@ export default {
       return this.connected && this.$store.state.connector.orientation
     },
     gripperIsSet () {
-      return this.connected && this.$store.state.connector.gripper.width
+      return this.connected && this.$store.state.connector.gripper.name
     },
     jointsSet () {
       return this.connected && this.$store.getters['connector/jointsSet']
@@ -111,8 +110,8 @@ export default {
     orientation () {
       return formatter.prettyOrientation(this.$store.state.connector.orientation, this.eulerAngles)
     },
-    gripperData () {
-      return this.$store.state.connector.gripper
+    gripper () {
+      return formatter.prettyGripper(this.$store.state.connector.gripper)
     }
   },
   data () {

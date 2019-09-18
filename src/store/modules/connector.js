@@ -7,17 +7,13 @@ const publishMsg = (state, topicName, msg) => {
   if (idx > -1) state.topics[idx].publish(msg)
 }
 
-const callService = (commit, state, serviceName, request) => {
+const callService = (state, serviceName, request) => {
   const idx = state.services.findIndex(s => s.name === serviceName)
-  console.log('id: ', idx)
-  console.log('services: ', state.services)
   if (idx > -1) state.services[idx].callService(request, result => {
-    console.log('service result: ', result)
     const stateKeys = Object.keys(state)
     Object.keys(result).forEach(key => {
       if (!stateKeys.includes(key)) return // unable to properly map result dimension
-      // state[key] = result[key]
-      commit('serviceCallback', { key, data: result[key]})
+      state[key] = result[key]
     })
   })
 }
@@ -42,7 +38,6 @@ const state = {
   gripper: {
     name: undefined,
     effort: undefined,
-    header: undefined,
     position: undefined,
     velocity: undefined
   }
@@ -66,10 +61,6 @@ const getters = {
 }
 
 const mutations = {
-  serviceCallback (state, res) {
-    console.log('res: ', res)
-    state[res.key] = res.data
-  },
   setRos (state, ros) {
     state.ros = ros
   },
@@ -100,7 +91,6 @@ const mutations = {
   addService (state, service) {
     const idx = state.services.findIndex(s => s.name === service.name)
     if (idx < 0) state.services.push(service)
-    console.log('service added: ', state.services)
   },
   removeService (state, service) {
     const idx = state.topics.findIndex(s => s.name === service.name)
@@ -130,7 +120,10 @@ const mutations = {
   softUpdate (state, payload) {
     const stateKeys = Object.keys(state)
     Object.keys(payload.res).forEach(key => {
-      if (payload.topic.name.includes('gripper')) state.gripper[key] = payload.res[key]
+      if (payload.topic.name.includes('gripper')) {
+        const gripperKeys = Object.keys(state.gripper)
+        if (gripperKeys.includes(key)) state.gripper[key] = payload.res[key]
+      }
       else if (stateKeys.includes(key)) {
         state[key] = payload.res[key]
       } else {
@@ -219,7 +212,7 @@ const actions = {
       } else console.log('already requested service ', entry.name)
 
       // init service with empty request
-      if (entry.emptyRequest) callService(commit, state, entry.name, entry.emptyRequest)
+      if (entry.emptyRequest) callService(state, entry.name, entry.emptyRequest)
     }
   },
   unsubscribe ({ commit, state }, topic) {
@@ -234,41 +227,42 @@ const actions = {
   initPublishers ({ state, commit }) {
     const publishers = topic.publishers
 
-    for (let topic of publishers) {
-      const idx = state.topics.findIndex(t => t.name === topic.name)
+    for (let pubTopic of publishers) {
+      const idx = state.topics.findIndex(t => t.name === pubTopic.name)
       state.topics[idx].subscribe(res => {
-        commit('softUpdate', { topic: topic, res: res })
+        commit('softUpdate', { topic: pubTopic, res: res })
       })
     }
   },
   move ({ state }, payload) {
     const topicName = '/panda_movement_bridge/PoseListener'
     // const topicName = '/joint_states'
-    const topic = new ROSLIB.Topic({
+    /* const topic = new ROSLIB.Topic({
       ros: state.ros,
       name: topicName, // topic name
       messageType: 'geometry_msgs/Pose' // topic's msg type
-    })
+    }) */
 
     let movement = state.position
+    const distance = payload.distance
     switch (payload.direction) {
       case 'up':
-        movement.z = movement.z + 0.3
+        movement.z = movement.z + distance
         break
       case 'down':
-        movement.z = movement.z - 0.3
+        movement.z = movement.z - distance
         break
       case 'left':
-        movement.y = movement.y - 0.3
+        movement.y = movement.y - distance
         break
       case 'right':
-        movement.y = movement.y + 0.3
+        movement.y = movement.y + distance
         break
       case 'in':
-        movement.x = movement.x - 0.05
+        movement.x = movement.x - distance
         break
       case 'out':
-        movement.x = movement.x + 0.05
+        movement.x = movement.x + distance
         break
       default: 
         break
@@ -314,22 +308,6 @@ const actions = {
     commit('setSpeed', speed)
   },
 
-  serviceMove ({ commit, state }) {
-    const serviceName = '/panda_movement_bridge/JointService'
-
-    const request = {
-      joint0: -0.2,
-      joint1: 0,
-      joint2: 0,
-      joint3: 0,
-      joint4: 0,
-      joint5: 0,
-      joint6: 0
-    }
-
-    callService(commit, state, serviceName, request)
-  },
-
   serviceSpeed ({ state }) {
     const serviceName = '/panda_movement_bridge/moveSpeedService'
 
@@ -337,27 +315,26 @@ const actions = {
       moveSpeed: 0.2
     }
 
-    callService(commit, state, serviceName, request)
+    callService(state, serviceName, request)
   },
 
   turnJoint ({ state, getters }, payload) {
     const serviceName = '/panda_movement_bridge/JointService'
 
     let request = {}
-    Object.keys(getters['connector/joints']).forEach(key => {
+    Object.keys(getters['joints']).forEach(key => {
       request[key] = 0
     })
     request = Object.assign(request, payload)
-    console.log('request: ', request)
 
-    callService(commit, state, serviceName, request)
+    callService(state, serviceName, request)
   },
   
   moveGripper ({ state, commit }, msg) {
     const topicName = '/panda_movement_bridge/GripperListenerMove'
+    console.log('msg: ', msg)
 
     publishMsg(state, topicName, msg)
-    commit('setGripper', msg)
   }
 }
 

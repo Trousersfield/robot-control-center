@@ -1,9 +1,18 @@
 <template>
   <div class="w-full flex flex-row">
     <div class="flex-1 flex-col bg-gray-lighter px-4 py-2 m-2 left-0">
-      <div class="w-full flex">
-        <yz-controls class="flex-1" />
-        <x-controls class="flex-1" />
+      <div class="flex items-center justify-center">
+        <div>Move distance: </div>
+        <div class="w-20">
+          <div class="input-basic">
+            <input id="gripperSpeed" type="text" v-model="distance">
+          </div>
+        </div>
+        <div class="meta">m</div>
+      </div>
+      <div class="flex">
+        <yz-controls class="flex-1" @move="move"/>
+        <x-controls class="flex-1" @move="move"/>
       </div>
     </div>
     <div class="flex-1 bg-gray-lighter px-4 py-2 m-2 text-center align-middle">
@@ -40,7 +49,8 @@ export default {
     return {
       yzControl: true,
       direction: 'y',
-      handAngle: 0
+      handAngle: 0,
+      distance: 0.1
     }
   },
   computed: {
@@ -60,7 +70,10 @@ export default {
     },
     recover () {
       this.$store.dispatch('connector/recover')
-    }
+    },
+    move (pos) {
+      this.$store.dispatch('connector/move', { distance: parseFloat(this.distance), direction: pos })
+    },
   }
 }
 </script>

@@ -20,9 +20,7 @@
         Name: {{ service.name }} Service type: {{ service.serviceType }}
       </li>
     </ul>
-    <button class="button" @click="callJoint">Call Service Joint</button>
     <button class="button" @click="callSpeed">Call Service Robot Speed</button>
-    {{ $store.state.connector.position }}
   </div>
 </template>
 
@@ -34,9 +32,6 @@ export default {
     connector
   },
   methods: {
-    callJoint () {
-      this.$store.dispatch('connector/serviceMove')
-    },
     callSpeed () {
       this.$store.dispatch('connector/serviceSpeed')
     }

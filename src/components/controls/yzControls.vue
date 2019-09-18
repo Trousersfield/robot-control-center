@@ -4,7 +4,7 @@
       <div></div>
       <div
         class="rounded-t-lg control"
-        @click="move('up')"
+        @click="$emit('move', 'up')"
         title="move up"
       >
         <chevron-up-icon/>
@@ -14,7 +14,7 @@
     <div>
       <div
         class="rounded-l-lg control"
-        @click="move('left')"
+        @click="$emit('move', 'left')"
         title="move left"
       >
         <chevron-left-icon/>
@@ -22,7 +22,7 @@
       <div class="filler"></div>
       <div
         class="rounded-r-lg control"
-        @click="move('right')"
+        @click="$emit('move', 'right')"
         title="move right"
       >
         <chevron-right-icon/>
@@ -32,7 +32,7 @@
       <div></div>
       <div
         class="rounded-b-lg control"
-        @click="move('down')"
+        @click="$emit('move', 'down')"
         title="move down"
       >
         <chevron-down-icon/>
@@ -51,11 +51,6 @@ export default {
     ChevronDownIcon,
     ChevronRightIcon, 
     ChevronUpIcon
-  },
-  methods: {
-    move (pos) {
-      this.$store.dispatch('connector/move', { direction: pos })
-    },
   }
 }
 </script>

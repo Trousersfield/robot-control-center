@@ -5,7 +5,7 @@
       <p>{{ value }}</p>
       <div class="w-20">
         <div class="input-basic thin">
-          <input :id="key" type="text" v-model="turnAmount[key]">
+          <input :id="key" type="text" v-model="turnAmount[key]" placeholder="0.1">
         </div>
       </div>
       <p class="meta">percent?</p>
@@ -33,7 +33,8 @@ export default {
   },
   methods: {
     turnJoint (joint, direction) {
-      let turn = parseFloat(this.turnAmount[joint])
+      let turn = parseFloat(this.turnAmount[joint]) || 0.1
+      if (turn > 0.5) turn = 0.5
       if (direction === 'right') turn = -turn
       this.$store.dispatch('connector/turnJoint', { [joint]: turn })
     }

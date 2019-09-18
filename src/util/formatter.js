@@ -41,6 +41,17 @@ const prettyJoints = (joints) => {
   return formattedJoints
 }
 
+const prettyGripper = gripper => {
+  if (!gripper) return
+  let formattedGripper = {
+    'Name': gripper.name[0],
+    'Effort': gripper.effort,
+    'Position': `${gripper.position[0].toFixed(3)} | ${gripper.position[1].toFixed(3)}`,
+    'Velocity': gripper.velocity
+  }
+  return formattedGripper
+}
+
 export default {
-  prettyPos, prettyOrientation, prettyJoints
+  prettyPos, prettyOrientation, prettyJoints, prettyGripper
 }
