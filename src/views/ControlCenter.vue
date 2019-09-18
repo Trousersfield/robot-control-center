@@ -2,7 +2,7 @@
   <div class="w-full flex flex-col control-grid">
     <div class="w-full flex flex-row">
       <div class="flex-1 bg-gray-lighter px-4 py-2 m-2">
-        <robot-model></robot-model>
+        <robot></robot>
       </div>
       <div class="flex-1 bg-gray-lighter px-4 py-2 m-2">
         <profile></profile>
@@ -15,11 +15,11 @@
 <script>
 import Profile from '../components/Profile.vue'
 import ControlPanel from '../components/ControlPanel.vue'
-import RobotModel from '../components/RobotModel.vue'
+import Robot from '../components/Robot.vue'
 
 export default {
   components: {
-    Profile, ControlPanel, RobotModel
+    Profile, ControlPanel, Robot
   }
 }
 </script>

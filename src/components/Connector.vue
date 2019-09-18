@@ -11,17 +11,14 @@
       </div>
     </div>
     <div class="flex content-center justify-between flex-wrap p-2">
-      <button v-if="$store.state.connected" class="button" @click="disconnect">Disconnect</button>
+      <button v-if="$store.state.connector.connected" class="button" @click="disconnect">Disconnect</button>
       <button v-else class="button" @click="connect" :disabled="connecting">Connect</button>
     </div>
     <div>
-      <p class="info" v-if="$store.state.connected">Connected to {{ $store.state.ip }}:{{ $store.state.port }}</p>
+      <p class="info" v-if="$store.state.connector.connected">Connected to {{ $store.state.connector.ip }}:{{ $store.state.connector.port }}</p>
       <p v-if="connecting" class="meta">Trying to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
       <p class="warning" v-else-if="err">Unable to connect to {{ parameters.ip }}:{{ parameters.port }}</p>
     </div>
-    <!--<div v-if="$store.state." class="flex flex-col">
-      <div ></div>
-    </div>-->
   </div>
 </template>
 
@@ -41,7 +38,7 @@ export default {
   methods: {
     connect () {
       this.connecting = true
-      this.$store.dispatch('connect', this.parameters)
+      this.$store.dispatch('connector/connect', this.parameters)
         .then((res) => {
           if (res) console.log('res: ', res)
           this.connecting = false
@@ -53,7 +50,7 @@ export default {
         })
     },
     disconnect () {
-      this.$store.dispatch('disconnect')
+      this.$store.dispatch('connector/disconnect')
     }
   }
 }

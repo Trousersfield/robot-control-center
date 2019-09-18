@@ -47,7 +47,7 @@ export default {
       this.$refs.slider.style.transform = (`translate(${e.offsetX}px, 0px`)
     },
     setSpeed (speed) {
-      this.$store.dispatch('setSpeed', speed)
+      this.$store.dispatch('connector/setSpeed', speed)
     }
   }
 }

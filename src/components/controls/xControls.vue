@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     move (pos) {
-      this.$store.dispatch('move', { direction: pos })
+      this.$store.dispatch('connector/move', { direction: pos })
     },
   }
 }

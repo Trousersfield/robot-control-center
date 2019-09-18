@@ -79,7 +79,7 @@
           </div>
         </div>
       </div>
-      {{ $store.state.gripper }}
+      {{ $store.state.connector.gripper }}
     </div>
   </div>
 </template>
@@ -96,25 +96,25 @@ export default {
   },
   computed: {
     positionIsSet () {
-      return this.$store.state.connected && this.$store.state.position
+      return this.$store.state.connector.connected && this.$store.state.connector.position
     },
     orientationIsSet () {
-      return this.$store.state.connected && this.$store.state.orientation
+      return this.$store.state.connector.connected && this.$store.state.connector.orientation
     },
     gripperIsSet () {
-      return this.$store.state.connected && this.$store.state.gripper.width
+      return this.$store.state.connector.connected && this.$store.state.connector.gripper.width
     },
     jointsSet () {
-      return this.$store.state.connected && this.$store.getters['jointsSet']
+      return this.$store.state.connector.connected && this.$store.getters['connector/jointsSet']
     },
     position () {
-      return formatter.prettyPos(this.$store.state.position)
+      return formatter.prettyPos(this.$store.state.connector.position)
     },
     orientation () {
-      return formatter.prettyOrientation(this.$store.state.orientation, this.eulerAngles)
+      return formatter.prettyOrientation(this.$store.state.connector.orientation, this.eulerAngles)
     },
     gripperData () {
-      return this.$store.state.gripper
+      return this.$store.state.connector.gripper
     }
   },
   data () {
@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     setSpeed (speed) {
-      this.$store.dispatch('setSpeed', { data: speed })
+      this.$store.dispatch('connector/setSpeed', { data: speed })
     }
   }
 }

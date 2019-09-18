@@ -1,7 +1,7 @@
 <template>
   <ul class="menu menu-main">
     <li
-      v-if="$store.state.connected"
+      v-if="$store.state.connector.connected"
       class="connection"
     >
       <span class="success"></span>
@@ -11,7 +11,6 @@
       <span class="alert"></span>
       <p>Disconnected</p>
     </li>
-    <router-link to="/" tag="li">Home</router-link>
     <router-link to="/controlCenter" tag="li">Control Center</router-link>
     <router-link to="/settings" tag="li">Settings</router-link>
     <router-link to="/about" tag="li">About</router-link>

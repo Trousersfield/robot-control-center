@@ -76,13 +76,13 @@ export default {
   },
   methods: {
     stop () {
-      this.$store.dispatch('stop')
+      this.$store.dispatch('connector/stop')
     },
     turnHand () {
-      this.$store.dispatch('turnHand', { direction: this.direction, angle: this.handAngle })
+      this.$store.dispatch('connector/turnHand', { direction: this.direction, angle: this.handAngle })
     },
     recover () {
-      this.$store.dispatch('recover')
+      this.$store.dispatch('connector/recover')
     }
   }
 }

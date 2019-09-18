@@ -28,14 +28,14 @@ export default {
   },
   computed: {
     joints () {
-      return formatter.prettyJoints(this.$store.getters['joints'])
+      return formatter.prettyJoints(this.$store.getters['connector/joints'])
     }
   },
   methods: {
     turnJoint (joint, direction) {
       let turn = parseFloat(this.turnAmount[joint])
       if (direction === 'right') turn = -turn
-      this.$store.dispatch('turnJoint', { [joint]: turn })
+      this.$store.dispatch('connector/turnJoint', { [joint]: turn })
     }
   }
 }

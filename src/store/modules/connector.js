@@ -1,6 +1,6 @@
-import quaternion from '../util/quaternion.js'
-import service from '../util/service.js'
-import topic from '../util/topic.js'
+import quaternion from '../../util/quaternion.js'
+import service from '../../util/service.js'
+import topic from '../../util/topic.js'
 
 const publishMsg = (state, topicName, msg) => {
   const idx = state.topics.findIndex(t => t.name === topicName)
@@ -21,8 +21,7 @@ const callService = (state, serviceName, request) => {
   })
 }
 
-export default {
-  state: {
+const state = {
     ros: undefined,
     connected: false,
     ip: '',
@@ -46,9 +45,9 @@ export default {
     joint4: undefined,
     joint5: undefined,
     joint6: undefined
-  },
+  }
 
-  getters: {
+const getters = {
     jointsSet: state => {
       return state.joint0 && state.joint1 && state.joint2 && state.joint3 && state.joint4 && state.joint5 && state.joint6
     },
@@ -63,9 +62,9 @@ export default {
         joint6: state.joint6,
       }
     }
-  },
+  }
 
-  mutations: {
+const mutations = {
     setRos (state, ros) {
       state.ros = ros
     },
@@ -132,9 +131,9 @@ export default {
         }
       })
     }
-  },
-
-  actions: {
+  }
+  
+const actions = {
     connect ({ commit, state, dispatch }, payload) {
       return new Promise((resolve, reject) => {
 
@@ -349,7 +348,7 @@ export default {
       const serviceName = '/panda_movement_bridge/JointService'
 
       let request = {}
-      Object.keys(getters.joints).forEach(key => {
+      Object.keys(getters['connector/joints']).forEach(key => {
         request[key] = 0
       })
       request = Object.assign(request, payload)
@@ -358,4 +357,11 @@ export default {
       callService(state, serviceName, request)
     }
   }
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  mutations,
+  actions
 }

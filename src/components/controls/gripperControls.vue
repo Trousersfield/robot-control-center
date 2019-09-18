@@ -38,16 +38,16 @@ export default {
   },
   computed: {
     maxOpened () {
-      return this.$store.state.gripper.width > 0.079
+      return this.$store.state.connector.gripper.width > 0.079
     },
     maxClosed () {
-      return this.$store.state.gripper.width < 0.0015
+      return this.$store.state.connector.gripper.width < 0.0015
     },
     opening () {
-      return this.$store.state.gripper.opening
+      return this.$store.state.connector.gripper.opening
     },
     closing () {
-      return this.$store.state.gripper.closing
+      return this.$store.state.connector.gripper.closing
     },
     disabled () {
       return (this.opening && this.closing) || parseFloat(this.speed) <= 0
@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     moveGripper (direction) {
-      let width = this.$store.state.gripper.width
+      let width = this.$store.state.connector.gripper.width
       switch (direction) {
         case 'open':
           width += 0.02
@@ -66,7 +66,7 @@ export default {
         default:
           break
       }
-      this.$store.dispatch('moveGripper', { width: width, speed: parseFloat(this.speed) })
+      this.$store.dispatch('connector/moveGripper', { width: width, speed: parseFloat(this.speed) })
     }
   }
 }
