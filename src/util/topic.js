@@ -6,14 +6,10 @@ const listeners = [
   { name: '/franka_control/error_recovery/goal', messageType: 'franka_control/ErrorRecoveryActionGoal' },
   // gripper
   { name: '/panda_movement_bridge/GripperListenerMove', messageType: 'franka_gripper/MoveGoal' },
-  { name: '/panda_movement_bridge/GripperListenerGrasp', messageType: 'franka_gripper/GraspGoal' },
-  // robot speed
-  { name: '/panda_movement_bridge/SpeedListener', messageType: 'std_msgs/Float64' }
+  { name: '/panda_movement_bridge/GripperListenerGrasp', messageType: 'franka_gripper/GraspGoal' }
 ]
 
 const publishers = [
-  // robot speed
-  { name: '/panda_movement_bridge/SpeedPublisher', messageType: 'std_msgs/Float64' },
   // current robot position in sphere
   { name: '/panda_movement_bridge/PosePublisher', messageType: 'geometry_msgs/Pose' },
   // robot's gripper's states

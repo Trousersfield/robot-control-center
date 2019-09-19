@@ -20,7 +20,6 @@
         Name: {{ service.name }} Service type: {{ service.serviceType }}
       </li>
     </ul>
-    <button class="button" @click="callSpeed">Call Service Robot Speed</button>
   </div>
 </template>
 
