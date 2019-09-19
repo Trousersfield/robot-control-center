@@ -181,6 +181,7 @@ module.exports = {
       '2': '2px',
       '4': '4px',
       '8': '8px',
+      '10': '10px'
     },
     boxShadow: {
       default: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
@@ -319,6 +320,7 @@ module.exports = {
       ...negative(theme('spacing')),
     }),
     maxHeight: {
+      md: '28rem',
       full: '100%',
       screen: '100vh',
     },

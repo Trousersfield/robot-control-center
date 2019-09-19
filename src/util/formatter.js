@@ -36,7 +36,7 @@ const prettyJoints = (joints) => {
   if (!joints) return
   let formattedJoints = {}
   Object.keys(joints).forEach(key => {
-    formattedJoints[key] = joints[key].toFixed(6)
+    formattedJoints[key] = (joints[key] * 180 / Math.PI).toFixed(2)
   })
   return formattedJoints
 }

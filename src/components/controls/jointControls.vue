@@ -2,14 +2,13 @@
   <div class="joint-controls">
     <div v-for="(value, key) in joints" :key="key">
       <p class="font-bold">{{ key }}: </p>
-      <p>{{ value }}</p>
-      <div class="w-20">
+      <p>{{ value }}°</p>
+      <div class="w-15">
         <div class="input-basic thin">
-          <input :id="key" type="text" v-model="turnAmount[key]" placeholder="0.1">
+          <input :id="key" type="text" v-model="turnDegree[key]" placeholder="45°">
         </div>
       </div>
-      <p class="meta">percent?</p>
-      <div class="button-group">
+      <div class="button-group small">
         <button @click="turnJoint(key, 'left')">left</button>
         <button @click="turnJoint(key, 'right')">right</button>
       </div>
@@ -23,7 +22,7 @@ import formatter from '../../util/formatter.js'
 export default {
   data () {
     return {
-      turnAmount: {}
+      turnDegree: {}
     }
   },
   computed: {
@@ -33,10 +32,10 @@ export default {
   },
   methods: {
     turnJoint (joint, direction) {
-      let turn = parseFloat(this.turnAmount[joint]) || 0.1
-      if (turn > 0.5) turn = 0.5
-      if (direction === 'right') turn = -turn
-      this.$store.dispatch('connector/turnJoint', { [joint]: turn })
+      let turnRAD = parseFloat(this.turnDegree[joint]) || 45
+      turnRAD = turnRAD / 180 * Math.PI
+      if (direction === 'right') turnRAD = -turnRAD
+      this.$store.dispatch('connector/turnJoint', { [joint]: turnRAD })
     }
   }
 }

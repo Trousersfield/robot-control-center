@@ -1,12 +1,5 @@
 <template>
   <div class="page-container">
-    <div class="page-header">
-      <div class="w-1/6"></div>
-      <div class="w-4/6 text-center">
-        <h1>Robot Control Center</h1>
-      </div>
-      <div class="w-1/6"></div>
-    </div>
     <div class="content-container">
       <main-menu class="main-menu"></main-menu>
       <div class="main-content">
@@ -37,7 +30,7 @@ export default {
   -moz-osx-font-smoothing: grayscale
 
 .page-container
-  @apply w-full h-full bg-gray-bright
+  @apply w-full h-full bg-gray-bright pt-5
 
 .page-header
   @apply w-full inset-x-0 top-0 bg-gray-lightest p-2 flex

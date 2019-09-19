@@ -1,18 +1,19 @@
 <template>
-  <div>
-    <h2 class="text-center">Livestream</h2>
-    <div class="frame-container" ref="frameContainer">
-      <iframe
-        :src="source"
-        frameborder="0"
-        allowfullscreen>
-      </iframe>
-    </div>
+  <div class="frame-container" ref="frameContainer">
+    <iframe
+      :src="source"
+      frameborder="0"
+      allowfullscreen>
+    </iframe>
+    <video-icon class="absolute left-0 top-0 text-gray-light w-10 h-10 ml-2" />
   </div>
 </template>
 
 <script>
+import { VideoIcon } from 'vue-feather-icons'
+
 export default {
+  components: { VideoIcon },
   data () {
     return {
       width: 640,
@@ -55,7 +56,7 @@ export default {
 
 <style lang="sass" scoped>
 .frame-container
-  @apply relative overflow-hidden
+  @apply relative overflow-hidden w-full
   padding-bottom: 75%
 
   &.ratio16x9

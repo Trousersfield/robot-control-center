@@ -9,10 +9,18 @@
   
   &[disabled]
     @apply bg-blue-lightest cursor-not-allowed
-    
+
+.button-icon
+  @apply text-gray-darker
+  
+  &:hover
+    @apply text-black
 
 .button-group
   @apply inline-flex
+
+  &.small button
+    @apply py-1
 
   >button
     @apply bg-gray text-sm py-2 px-4

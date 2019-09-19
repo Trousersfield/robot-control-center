@@ -1,5 +1,8 @@
 <template>
   <ul class="menu menu-main">
+    <li class="mb-10">
+      <img src="../assets/kit-rcc.png">
+    </li>
     <li
       v-if="$store.state.connector.connected"
       class="connection"
@@ -43,7 +46,7 @@ export default {
       @apply pl-2 font-bold border-l-4 border-red-darker
   
   >.connection
-    @apply inline-block pb-4 border-b-4 border-gray
+    @apply inline-block pb-4 mb-10
 
     >span
       @apply w-8 h-8 bg-gray inline-block rounded-full align-middle

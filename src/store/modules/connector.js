@@ -332,7 +332,14 @@ const actions = {
   
   moveGripper ({ state, commit }, msg) {
     const topicName = '/panda_movement_bridge/GripperListenerMove'
-    console.log('msg: ', msg)
+    msg.width = parseFloat(msg.width)
+
+    publishMsg(state, topicName, msg)
+  },
+  
+  grasp ({ state }, msg) {
+    const topicName = '/panda_movement_bridge/GripperListenerGrasp'
+    console.log('grasp msg: ', msg)
 
     publishMsg(state, topicName, msg)
   }
